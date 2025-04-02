@@ -1,0 +1,26 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  image: node:18
+  only:
+    - main  # Deploy only when code is pushed to the main branch
+  before_script:
+    # Install SSH client and set up keys
+    - apt-get update -y && apt-get install -y openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+  script:
+    - echo "Deploying to EC2..."
+    # Copy code from GitLab to the Ubuntu EC2 instance
+    - scp -r ./* $SSH_USER@$EC2_HOST:/home/$SSH_USER/backend-app/
+    # SSH into EC2 and install dependencies, restart PM2
+    - ssh $SSH_USER@$EC2_HOST << 'EOF'
+        cd /home/$SSH_USER/backend-app
+        npm install  # Install dependencies
+        pm2 restart backend-app || pm2 start index.js --name backend-app
+        pm2 save
+      EOF
