@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18  # Use Node.js 18 runtime
+    commands:
+      - echo "Installing dependencies..."
+      - npm install  # Installs dependencies based on package.json
+
+  build:
+    commands:
+      - echo "Building the backend application..."
+      - npm run build  # If you have a build step (modify as needed)
+
+  post_build:
+    commands:
+      - echo "Build completed successfully."
