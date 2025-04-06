@@ -5,12 +5,20 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
+      - npm install -g sonarqube-scanner
       - echo Installing project dependencies...
       - npm install
 
   build:
     commands:
       - echo Running SonarQube Analysis...
+      - |
+        sonar-scanner \
+          -Dsonar.projectKey=Venu1433697_nodejs \
+          -Dsonar.organization=venu1433697 \
+          -Dsonar.sources=src \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=$SONAR_TOKEN
 
 artifacts:
   files:
