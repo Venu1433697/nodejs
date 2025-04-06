@@ -3,16 +3,26 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 18  # Use Node.js 18 runtime
+      nodejs: 18
     commands:
-      - echo "Installing dependencies..."
-      - npm install  # Installs dependencies based on package.json
+      - echo Installing SonarQube Scanner...
+      - npm install -g sonarqube-scanner
+      - echo Installing project dependencies...
+      - npm install
 
   build:
     commands:
-      - echo "Building the backend application..."
-      - npm run build  # If you have a build step (modify as needed)
+      - echo Running SonarQube Analysis...
+      - sonar-scanner \
+          -Dsonar.projectKey=Venu1433697_nodejs \
+          -Dsonar.projectName=nodejs \
+          -Dsonar.projectVersion=1.0 \
+          -Dsonar.sources=. \
+          -Dsonar.sourceEncoding=UTF-8 \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.organization=venu1433697 \
+          -Dsonar.login=$SONAR_TOKEN
 
-  post_build:
-    commands:
-      - echo "Build completed successfully."
+artifacts:
+  files:
+    - '**/*'
