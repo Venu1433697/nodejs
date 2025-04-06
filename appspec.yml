@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ubuntu/myapp
+
+hooks:
+  AfterInstall:
+    - location: scripts/restart.sh
+      timeout: 30
+      runas: ubuntu
