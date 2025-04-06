@@ -16,7 +16,7 @@ phases:
       - sonar-scanner \
           -Dsonar.projectKey=Venu1433697_nodejs \
           -Dsonar.organization=venu1433697 \
-          -Dsonar.sources=. \
+          -Dsonar.sources=src \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=$SONAR_TOKEN
 
