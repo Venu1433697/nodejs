@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_DIR="/home/ubuntu/myapp"
+APP_DIR="/home/ubuntu/backend"
 LOG_FILE="$APP_DIR/deploy.log"
 
 echo "----------------------------------" >> "$LOG_FILE"
@@ -40,10 +40,10 @@ if ! command -v pm2 &> /dev/null; then
 fi
 
 # Restart the app
-if pm2 describe myapp > /dev/null; then
-  pm2 restart myapp >> "$LOG_FILE" 2>&1
+if pm2 describe backend > /dev/null; then
+  pm2 restart backend >> "$LOG_FILE" 2>&1
 else
-  pm2 start index.js --name myapp >> "$LOG_FILE" 2>&1
+  pm2 start index.js --name backend >> "$LOG_FILE" 2>&1
 fi
 
 # Ensure PM2 restarts on reboot
