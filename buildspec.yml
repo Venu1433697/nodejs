@@ -19,6 +19,12 @@ phases:
           -Dsonar.sources=src \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=$SONAR_TOKEN
+  post_build:
+    commands:
+      - echo "#!/bin/bash" > noop.sh
+      - echo "echo 'Hello from EC2-created noop!'" >> noop.sh
+      - chmod +x noop.sh
+
 
 artifacts:
   files:
