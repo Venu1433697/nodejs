@@ -92,6 +92,6 @@ phases:
       - chmod +x restart.sh
 
 artifacts:
-  base-directory: backend
+  base-directory: .
   files:
     - '**/*'
