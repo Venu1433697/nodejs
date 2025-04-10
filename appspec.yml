@@ -1,3 +1,5 @@
+appspec.yml
+
 version: 0.0
 os: linux
 
@@ -7,6 +9,6 @@ files:
 
 hooks:
   AfterInstall:
-    - location: noop.sh
+    - location: restart.sh 
       timeout: 300
       runas: ubuntu
