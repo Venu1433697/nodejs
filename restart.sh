@@ -45,7 +45,7 @@ if pm2 describe main-backend > /dev/null; then
   pm2 restart main-backend >> "$LOG_FILE" 2>&1
 else
   echo "Starting new PM2 process 'main-backend'" >> "$LOG_FILE"
-  pm2 start src/server.js --name main-backend >> "$LOG_FILE" 2>&1
+  pm2 start src/index.js --name main-backend >> "$LOG_FILE" 2>&1
 fi
 
 # Ensure PM2 auto-starts on reboot
