@@ -5,7 +5,6 @@ phases:
     runtime-versions:
       nodejs: 20
     commands:
-      - cd backend
       - echo "Installing npm 9.2.0..."
       - npm install -g npm@9.2.0
       - echo "Node.js version:"
