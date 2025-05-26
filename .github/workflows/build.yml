@@ -1,4 +1,4 @@
-name: Deploy Node.js App to Azure VM
+name: Deploy Node.js App to Azure Container Apps
 
 on:
   workflow_dispatch:
@@ -6,40 +6,59 @@ on:
     branches: [main]
 
 env:
-  VM_USERNAME: azureuser  # Replace with your actual VM username
+  AZURE_CONTAINER_REGISTRY: vacanziacrregistry
+  CONTAINER_APP_NAME: vacanzi-backend-app
+  RESOURCE_GROUP: vacanzi-job-portal-CSAi_group
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Archive project files
-        run: zip -r backend.zip . -x "*.git*"
-
-      - name: Copy files to Azure VM
-        uses: appleboy/scp-action@v0.1.7
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          host: ${{ secrets.AZURE_VM_IP }}
-          username: ${{ env.VM_USERNAME }}
-          key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          source: "backend.zip"
-          target: "~/"
+          node-version: '20'
 
-      - name: SSH into Azure VM and deploy app
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Install dependencies
+        run: npm ci
+
+      # Optional: run tests
+      # - name: Run tests
+      #   run: npm test
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Azure Container Registry (ACR)
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.AZURE_VM_IP }}
-          username: ${{ env.VM_USERNAME }}
-          key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          script: |
-            sudo apt-get update
-            sudo apt-get install -y unzip
-            rm -rf ~/backend-app
-            unzip -o ~/backend.zip -d ~/backend-app
-            cd ~/backend-app
-            npm install
-            pm2 delete backend || true
-            pm2 start src/index.js --name backend
+          registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+      - name: Build and push image to ACR
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile              # Dockerfile is in root directory
+          push: true
+          tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.CONTAINER_APP_NAME }}
+          environmentVariables: |
+            NODE_ENV=production
+            PORT=3000
