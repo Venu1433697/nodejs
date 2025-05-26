@@ -9,7 +9,7 @@
 
 var http = require('http');
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 http.createServer(function (req, res) {
   res.write('A Monk in Cloud');
