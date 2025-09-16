@@ -5,10 +5,10 @@ on:
   push:
     branches: [main]
 
-env:
-  AZURE_CONTAINER_REGISTRY: vacanziacrregistry
-  CONTAINER_APP_NAME: vacanzi-backend-app
-  RESOURCE_GROUP: vacanzi-job-portal-CSAi_group
+# env:
+#   AZURE_CONTAINER_REGISTRY: vacanziacrregistry
+#   CONTAINER_APP_NAME: vacanzi-backend-app
+#   RESOURCE_GROUP: vacanzi-job-portal-CSAi_group
 
 jobs:
   build-and-deploy:
@@ -33,12 +33,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Azure Container Registry (ACR)
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
-          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
-          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+      # - name: Log in to Azure Container Registry (ACR)
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+      #     username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+      #     password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
       - name: Build and push image to ACR
         uses: docker/build-push-action@v6
